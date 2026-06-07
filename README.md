@@ -146,7 +146,6 @@ Optional files generated at runtime:
 ```
 ai_council_memory.json
 idea_evolution.mmd
-synapse_run_log.jsonl
 ```
 
 ---
