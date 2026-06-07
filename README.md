@@ -163,8 +163,8 @@ Synapse/
 ├── README.md
 ├── LICENSE
 ├── .gitattributes
-└── .gitignore
-
+├── .gitignore
+└── requirements.txt
 ```
 
 Optional files generated at runtime:
