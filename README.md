@@ -38,6 +38,29 @@ The project was built with help from ChatGPT, mainly to explore whether AI can b
 
 ## How it works
 
+## Process
+
+```mermaid
+flowchart TD
+    A[User Prompt]
+    B[Generate Ideas]
+    C[Critique Ideas]
+    D[Score Ideas]
+    E[Eliminate Weak Ideas]
+    F[Improve Survivors]
+    G[Repeat]
+    H[Final Answer]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> C
+    G --> H
+```
+
 The system follows a simple loop:
 
 - generate  
