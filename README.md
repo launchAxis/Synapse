@@ -227,3 +227,22 @@ NextGen Code Enforcer is a comprehensive developer tool designed to sit inside a
 - `gemma2:2b`
 - `llama3.2:3b`
 ```
+
+## License
+
+Synapse is licensed under the Business Source License 1.1.
+
+You may use Synapse for personal use, testing, research, education, learning, evaluation, and non-commercial experimentation.
+
+Commercial production use requires a separate written license from launchAxis until the Change Date listed in the LICENSE file.
+
+If Synapse is used to power a user-facing application under the non-commercial Additional Use Grant, the application must include:
+
+> Powered by Synapse (launchAxis)
+
+Applications using Synapse are also encouraged, but not required, to include a more visible link or badge such as:
+
+> Powered by Synapse by launchAxis
+
+On the Change Date, Synapse will become available under the Apache License 2.0.
+
