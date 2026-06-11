@@ -236,7 +236,7 @@ You may use Synapse for personal use, testing, research, education, learning, ev
 
 Commercial production use requires a separate written license from launchAxis until the Change Date listed in the LICENSE file.
 
-If Synapse is used to power a user-facing application under the non-commercial Additional Use Grant, the application must include:
+If Synapse is used to power a user-facing application under the non-commercial Additional Use Grant, the application is encouraged to include:
 
 > Powered by Synapse (launchAxis)
 
