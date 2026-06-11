@@ -43,7 +43,7 @@ flowchart TD
     E --> H
 ```
 
-The v0.2.0 loop is:
+The v0.2.1 loop is:
 
 1. Generate one idea per available model.
 2. Ask models for structured critiques.
