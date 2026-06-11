@@ -1,5 +1,18 @@
-launchAxis Software Assets
-Copyright 2026 launchAxis
+Synapse
+Copyright (c) 2026 launchAxis
 
-This product includes software developed by launchAxis.
-For project updates, visit: https://github.com
+Synapse is licensed under the Business Source License 1.1.
+
+Commercial production use requires a separate written license from launchAxis until the Change Date specified in the LICENSE file.
+
+Project:
+https://github.com/launchAxis/Synapse
+
+Required attribution for user-facing applications used under the Additional Use Grant:
+
+"Powered by Synapse (launchAxis)"
+
+Optional enhanced attribution:
+Applications using Synapse are also encouraged, but not required, to include a visible link or badge such as:
+
+"Powered by Synapse by launchAxis"
