@@ -10,8 +10,9 @@ Licensor:              launchAxis
 Licensed Work:          Synapse
 
 Additional Use Grant:   You may make production use of the Licensed Work
-only for Non-Commercial Purposes, subject to the
-attribution requirement below.
+                        only for Non-Commercial Purposes.
+
+                    Attribution is encouraged as described below.
 
                     "Non-Commercial Purposes" means use that is not
                     intended for or directed toward commercial advantage,
@@ -27,10 +28,10 @@ attribution requirement below.
 
                     If the Licensed Work is used to power a user-facing
                     application, product, website, interface, or system
-                    under this Additional Use Grant, that application must
-                    include the following attribution in its main user
-                    interface, about page, credits page, documentation,
-                    legal notices, or system output:
+                    under this Additional Use Grant, that application is 
+                    encouraged to include the following attribution in its 
+                    main user interface, about page, credits page, 
+                    documentation, legal notices, or system output:
 
                     "Powered by Synapse (launchAxis)"
 
