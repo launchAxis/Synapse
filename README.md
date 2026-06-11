@@ -180,7 +180,7 @@ python -m compileall .
 
 The project intentionally does not require a test framework yet. Parser checks can be run with small direct Python assertions while the codebase is still compact.
 
-### Examples
+## Examples
 
 **For a better comparison towards 0.1.0 we are using the same prompts as before.**
 
@@ -190,23 +190,31 @@ Prompts:
 - Design a developer tool that sits inside a code editor and improves code quality in real time (linting, bug detection, refactoring suggestions). Describe its architecture, how it processes code, and what makes it different from existing tools.
 - Design a self-improving AI system that learns from its own mistakes when generating ideas, without retraining the underlying model. It should evolve its decision-making process over time using feedback loops.
 
-## Output 1
+### Output 1
 
-# Final System Name:
+#### Final System Name:
 **LearnWell**
 
-# Core Concept:
+#### Core Concept:
 The LearnWell platform is designed as a comprehensive, AI-driven solution that addresses the multifaceted needs of students in real time while ensuring their well-being and productivity are not compromised. It integrates advanced learning analytics with robust human interaction to provide personalized support for academic challenges and mental health issues. The system aims to create a supportive ecosystem where students can thrive both academically and emotionally.
 
-## Output 2
+### Output 2
 
-# 1. Final System Name
+#### 1. Final System Name
 **School Eats Smart & Wasteless System**
 
-# 2. Core Concept
+#### 2. Core Concept
 The **School Eats Smart & Wasteless System** is an innovative, realistic, and low-cost solution to reduce food waste in school cafeterias. It combines existing technology with user-friendly strategies to provide a comprehensive approach that can be easily implemented without significant upfront investments or complex infrastructure changes.
 
-## Output 3
+### Output 3
+
+#### **1. Final System Name**
+NextGen Code Enforcer
+
+#### **2. Core Concept**
+NextGen Code Enforcer is a comprehensive developer tool designed to sit inside a code editor and offer real-time feedback on code quality, performance, and security in real time (linting, bug detection, refactoring suggestions). By leveraging advanced machine learning models fine-tuned with proprietary data and integrating seamlessly with Visual Studio Code (VSCode), this system aims to provide developers with faster and more accurate insights that significantly enhance productivity. The tool includes automated refactorings and supports a flexible feedback model for optimal user experience.
+
+### Full System Output Example
 
 
 
