@@ -1,83 +1,91 @@
+﻿![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Ollama](https://img.shields.io/badge/LLM-Ollama-black)
+
 # Synapse
 
-Synapse is a local multi-agent AI system where multiple small models work together to improve ideas instead of relying on a single answer.
+Synapse is a local multi-agent AI system where several small Ollama models work together to improve ideas instead of relying on one single answer.
 
-Instead of asking one AI and stopping there, Synapse runs a structured process where different models generate, critique, score, and improve ideas until only the strongest one survives.
+You can think of it as an AI council. One group of local models generates ideas, critiques them, compares them in direct tournaments, evolves the strongest survivors, and repeats the process until Synapse produces a final answer.
 
-It’s basically a small “AI council” that argues with itself, refines ideas, and converges toward a final result.
+## v0.2.1
 
----
+Synapse v0.2.1 is a bugfix and output-quality pass.
 
-## What it does
+Fixes:
 
-Synapse takes a prompt and runs it through an iterative system:
+- tournament winners are parsed only from a strict `WINNER:` line
+- unclear tournament judgments are retried once, then skipped
+- critiques use strict uppercase labels for more reliable parsing
+- failed critique parsing preserves the raw critique instead of showing empty fields
+- final results use a complete proposal structure
+- evolution prompts ask survivors to preserve distinct approaches
 
-1. Each model generates its own idea
-2. Every model critiques all ideas
-3. Ideas are scored and weaker ones are removed
-4. The surviving ideas are improved
-5. The cycle repeats for multiple rounds
-6. Eventually, one final idea remains
-7. The final idea is polished into a response
+## How It Works
 
-There is also a final presentation phase where the winning idea is rewritten in different styles and the best version is selected.
+```mermaid
+flowchart TD
+    A[User Prompt]
+    B[Generate Ideas]
+    C[Structured Critiques]
+    D[Pairwise Tournament]
+    E[Rank Ideas]
+    F[Generation Memory]
+    G[Evolve Survivors]
+    H[Final Result]
 
----
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> C
+    E --> H
+```
 
-## Why I made it
+The v0.2.0 loop is:
 
-Most AI tools give a single answer and stop there.
+1. Generate one idea per available model.
+2. Ask models for structured critiques.
+3. Compare every idea against every other idea.
+4. Record wins, losses, judge model, and reason.
+5. Rank ideas by tournament performance.
+6. Summarize generation memory.
+7. Improve the strongest survivors.
+8. Repeat for multiple generations.
+9. Synthesize the final answer.
 
-I wanted to see what happens if you force multiple models to disagree, refine each other’s work, and gradually converge on something better.
+## Models
 
-It’s not meant to be a massive system or anything overhyped — just an experiment in collaborative reasoning between models running locally.
-
-The project was built with help from ChatGPT, mainly to explore whether AI can be used to design better multi-AI systems.
-
----
-
-## How it works
-
-The system follows a simple loop:
-
-- generate  
-- critique  
-- score  
-- eliminate  
-- improve  
-- repeat  
-
-At the end of the loop, the strongest idea is selected and returned as the final output.
-
----
-
-## Models used
-
-By default, Synapse uses Ollama with these models:
+By default, Synapse uses:
 
 - `qwen2.5:3b`
 - `gemma2:2b`
 - `llama3.2:3b`
 
-They’re small enough to run on a normal laptop but different enough to produce varied opinions during critique and generation.
+You can edit these in `synapse/config.py`.
 
-You can swap them out anytime in the config section.
+If a model is missing, Synapse prints a warning like:
 
----
+```text
+Warning: model llama3.2:3b is not installed. Run: ollama pull llama3.2:3b
+```
+
+Synapse will continue with the remaining installed models when possible.
 
 ## Requirements
 
-You need Ollama installed first:
+Install Ollama:
 
 https://ollama.com
 
-Then install Python dependencies:
+Install Python dependencies:
 
 ```bash
-pip install ollama
+pip install -r requirements.txt
 ```
 
-Then pull models:
+Pull the default models:
 
 ```bash
 ollama pull qwen2.5:3b
@@ -85,80 +93,128 @@ ollama pull gemma2:2b
 ollama pull llama3.2:3b
 ```
 
----
-
 ## Usage
 
-Run the script:
+Run:
 
 ```bash
 python synapse.py
 ```
 
-Then enter a prompt when asked.
+Then enter a prompt.
 
 Example:
 
-Create a startup idea for AI that solves a real daily student problem. It must be realistic with current or near-future tech.
+```text
+Design an AI system that designs better AI systems through competition.
+```
 
----
 
-## What it’s good for
+## Output Modes
 
-Synapse works best for open-ended problems like:
+Synapse can print either a detailed trace or a simplified trace.
+
+When you run the app, choose:
+
+- `d` for detailed output: prints generated ideas, structured critiques, tournament results, rankings, memory, and final result.
+- `s` for simplified output: prints a compact overview of each generation, including ideas, critique highlights, tournament count, winners, win/loss scores, survivors, memory, and final result.
+
+Code can also call:
+
+```python
+run_council(topic, simplified=True)
+```
+
+## Project Structure
+
+```text
+Synapse/
+â”œâ”€â”€ synapse.py
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ README.md
+â”œâ”€â”€ CHANGELOG.md
+â”œâ”€â”€ synapse/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ config.py
+â”‚   â”œâ”€â”€ core.py
+â”‚   â”œâ”€â”€ models.py
+â”‚   â”œâ”€â”€ generation.py
+â”‚   â”œâ”€â”€ critique.py
+â”‚   â”œâ”€â”€ tournament.py
+â”‚   â”œâ”€â”€ evolution.py
+â”‚   â”œâ”€â”€ memory.py
+â”‚   â”œâ”€â”€ prompts.py
+â”‚   â”œâ”€â”€ ideas.py
+â”‚   â”œâ”€â”€ output.py
+â”‚   â””â”€â”€ utils.py
+â””â”€â”€ docs/
+    â”œâ”€â”€ SYNAPSE_BRAIN.md
+    â”œâ”€â”€ PROJECT_HISTORY.md
+    â””â”€â”€ ROADMAP.md
+```
+
+## Best Use Cases
+
+Synapse works best for open-ended prompts:
 
 - startup ideas
 - game concepts
-- product ideas
-- creative systems
+- product concepts
 - design problems
-- brainstorming research directions
+- research directions
+- self-improving AI system designs
 
-It is less useful for simple factual questions since its strength comes from comparing and evolving ideas.
-
----
-
-## Features
-
-- multiple AI models working together
-- structured critique and scoring system
-- elimination + improvement loop
-- optional hybrid ideas
-- memory between runs (optional)
-- Mermaid graph export
-- prompt self-improvement (optional)
-- fully local via Ollama
-
----
-
-## Project structure
-
-```
-Synapse/
-├── ai_council_evolution_system.py
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
-Optional files generated at runtime:
-
-```
-ai_council_memory.json
-idea_evolution.mmd
-```
-
----
+It is less useful for simple factual questions because its strength comes from critique, comparison, and evolution.
 
 ## Notes
 
-This is an experiment.
+Synapse is experimental. Results depend heavily on your installed models, hardware, prompts, and generation settings. The point is to explore whether structured disagreement between local models can produce better answers than a single first response.
 
-That means:
+## Developer Checks
 
-- results will vary depending on models
-- some prompts will work better than others
-- behavior may change as you tweak the system
+Run a syntax check:
 
-That’s part of the point — it’s meant to be played with.
+```bash
+python -m compileall .
+```
+
+The project intentionally does not require a test framework yet. Parser checks can be run with small direct Python assertions while the codebase is still compact.
+
+### Examples
+
+**For a better comparison towards 0.1.0 we are using the same prompts as before.**
+
+Prompts:
+- Create a startup idea for AI that solves a real daily student problem. It must be realistic with current or near-future tech.
+- Design a system to reduce food waste in school cafeterias without using any artificial intelligence. It should be realistic, low-cost, and usable in real schools today.
+- Design a developer tool that sits inside a code editor and improves code quality in real time (linting, bug detection, refactoring suggestions). Describe its architecture, how it processes code, and what makes it different from existing tools.
+- Design a self-improving AI system that learns from its own mistakes when generating ideas, without retraining the underlying model. It should evolve its decision-making process over time using feedback loops.
+
+## Output 1
+
+# Final System Name:
+**LearnWell**
+
+# Core Concept:
+The LearnWell platform is designed as a comprehensive, AI-driven solution that addresses the multifaceted needs of students in real time while ensuring their well-being and productivity are not compromised. It integrates advanced learning analytics with robust human interaction to provide personalized support for academic challenges and mental health issues. The system aims to create a supportive ecosystem where students can thrive both academically and emotionally.
+
+## Output 2
+
+# 1. Final System Name
+**School Eats Smart & Wasteless System**
+
+# 2. Core Concept
+The **School Eats Smart & Wasteless System** is an innovative, realistic, and low-cost solution to reduce food waste in school cafeterias. It combines existing technology with user-friendly strategies to provide a comprehensive approach that can be easily implemented without significant upfront investments or complex infrastructure changes.
+
+## Output 3
+
+
+
+**NOTE**
+- The Outputs given are only the conclusion or overview paragraphs taken from the original output along with the title
+- These prompts were given to, and outputs generated by, the following models:
+```
+- `qwen2.5:3b`
+- `gemma2:2b`
+- `llama3.2:3b`
 ```
