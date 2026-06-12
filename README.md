@@ -7,6 +7,8 @@ Synapse is a local multi-agent AI system where several small Ollama models work 
 
 You can think of it as an AI council. One group of local models generates ideas, critiques them, compares them in direct tournaments, evolves the strongest survivors, and repeats the process until Synapse produces a final answer.
 
+This is just an experimental project and was created mostly with ChatGPT (I'm not advanced enough yet and just wanted to explore the idea) I hope you enjoy tinkering with it!
+
 ## v0.2.1
 
 Synapse v0.2.1 is a bugfix and output-quality pass.
