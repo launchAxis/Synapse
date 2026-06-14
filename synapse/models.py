@@ -15,30 +15,47 @@ class ModelResponse:
 
 
 class ModelManager:
-    def __init__(self, configured_models: Dict[str, str], timeout_seconds: int = 45):
+    def __init__(self, configured_models: Dict[str, str], timeout_seconds: int = 45, verbose: bool = True):
         self.configured_models = configured_models
         self.usable_models: Dict[str, str] = {}
+        self.missing_models: Dict[str, str] = {}
+        self.available_model_names: set[str] = set()
+        self.verbose = verbose
         self.client = ollama.Client(timeout=timeout_seconds)
 
     def refresh_available_models(self) -> Dict[str, str]:
         try:
             response = self.client.list()
         except Exception as exc:
-            print("Warning: could not connect to Ollama.")
-            print("Make sure Ollama is installed and running, then try again.")
-            print(f"Details: {exc}")
+            self._warn("could not connect to Ollama.")
+            self._warn("Make sure Ollama is installed and running, then try again.")
+            self._warn(f"Details: {exc}")
             self.usable_models = {}
+            self.missing_models = dict(self.configured_models)
+            self.available_model_names = set()
             return self.usable_models
 
         installed = self._extract_model_names(response)
+        self.available_model_names = installed
         usable = {}
+        missing = {}
         for key, model in self.configured_models.items():
             if model in installed:
                 usable[key] = model
             else:
-                print(f"Warning: model {model} is not installed. Run: ollama pull {model}")
+                missing[key] = model
+
+        if missing:
+            self._warn("some configured Ollama models are not installed:")
+            for model in missing.values():
+                self._warn(f"- {model} (run: ollama pull {model})")
+            if installed:
+                self._warn("Available models: " + ", ".join(sorted(installed)))
+            else:
+                self._warn("No installed Ollama models were reported.")
 
         self.usable_models = usable
+        self.missing_models = missing
         return usable
 
     def ask(self, model: str, prompt: str) -> ModelResponse:
@@ -50,9 +67,9 @@ class ModelManager:
         except Exception as exc:
             message = str(exc)
             if "not found" in message.lower() or "pull model" in message.lower():
-                print(f"Warning: model {model} is not installed. Run: ollama pull {model}")
+                self._warn(f"model {model} is not installed. Run: ollama pull {model}")
             else:
-                print(f"Warning: model {model} failed: {message}")
+                self._warn(f"model {model} failed: {message}")
             return ModelResponse(ok=False, text="", error=message)
 
         text = ""
@@ -63,10 +80,14 @@ class ModelManager:
 
         if not text:
             message = f"model {model} returned an empty response"
-            print(f"Warning: {message}")
+            self._warn(message)
             return ModelResponse(ok=False, text="", error=message)
 
         return ModelResponse(ok=True, text=text)
+
+    def _warn(self, message: str) -> None:
+        if self.verbose:
+            print(f"Warning: {message}")
 
     @staticmethod
     def _extract_model_names(response: object) -> set[str]:

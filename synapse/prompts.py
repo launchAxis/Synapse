@@ -33,6 +33,31 @@ def generation_prompt(topic: str, model_label: str) -> str:
     """)
 
 
+def fresh_outsider_prompt(topic: str, model_label: str, generation: int, existing_ideas: Iterable[Idea]) -> str:
+    idea_list = "\n".join(f"- {idea.id}: {idea.text[:220]}" for idea in existing_ideas)
+    return dedent(f"""
+    You are council member {model_label} in Synapse.
+
+    Create one fresh outsider idea for generation {generation}. It should answer the same user prompt, but it
+    should not be a small edit of the current survivors.
+
+    User prompt:
+    {topic}
+
+    Current survivor direction:
+    {idea_list or "No survivor ideas available."}
+
+    Requirements:
+    - Keep the idea useful and relevant.
+    - Try a meaningfully different mechanism or angle.
+    - Be concrete enough for other models to critique.
+
+    Output:
+    Idea:
+    <fresh outsider idea>
+    """)
+
+
 def critique_prompt(topic: str, idea: Idea, critic_label: str) -> str:
     return dedent(f"""
     You are council critic {critic_label}. Give a structured critique that can help improve the idea.
@@ -109,6 +134,7 @@ def evolution_prompt(
     tournament_summary: str,
     memory: Iterable[GenerationMemory],
     model_label: str,
+    mutation_type: str = "fix_weakness",
 ) -> str:
     return dedent(f"""
     You are council improver {model_label}. Evolve this surviving idea into a stronger next-generation version.
@@ -128,7 +154,10 @@ def evolution_prompt(
     Generation memory:
     {memory_block(memory)}
 
-    Improve the idea by preserving its strongest parts and fixing its weakest parts.
+    Mutation direction:
+    {mutation_type}
+
+    Improve the idea according to the mutation direction while preserving its strongest parts.
     Preserve what made this surviving idea distinct.
     Do not simply rename it into the current winner or copy another survivor.
     If multiple survivors remain, maintain this as a meaningful alternative approach.
@@ -162,7 +191,11 @@ def memory_prompt(topic: str, ranked_ideas: list[Idea], generation: int) -> str:
 
 def final_prompt(topic: str, idea: Idea, memory: Iterable[GenerationMemory]) -> str:
     return dedent(f"""
-    Present the final Synapse result as the best direct answer to the user's prompt.
+    You are the final synthesizer in Synapse.
+
+    Turn the strongest evolved idea into the best direct answer to the user's prompt.
+    Do not assume the topic is about education, students, teachers, offline tools, privacy, or low-cost
+    devices unless the original user prompt asks for those things.
 
     User prompt:
     {topic}
@@ -173,16 +206,16 @@ def final_prompt(topic: str, idea: Idea, memory: Iterable[GenerationMemory]) -> 
     Generation memory:
     {memory_block(memory)}
 
-    Write a complete proposal with these sections:
-    1. Final system name
+    Write a complete, topic-appropriate final answer with these anchors:
+    1. Clear title or name
     2. Core concept
-    3. System architecture
-    4. How it works offline
-    5. How it protects privacy
-    6. How it supports teachers
-    7. How it works on low-cost devices
-    8. Biggest risks
-    9. Implementation roadmap
+    3. How it works
+    4. Why it is strong
+    5. Key features or components
+    6. Possible weaknesses or risks
+    7. Practical next steps or implementation roadmap
+    8. Polished final version
 
     Do not mainly summarize the tournament memory. Use it only to strengthen the final proposal.
+    Do not wrap the answer in a markdown code block.
     """)

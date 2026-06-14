@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Iterable, List
 
-from synapse.ideas import Comparison, Critique, GenerationMemory, Idea
+from synapse.ideas import Comparison, Critique, GenerationMemory, Idea, RunResult
 from synapse.utils import compact, section
 
 
@@ -102,3 +102,37 @@ def print_generation_summary(
 
     print("\nMemory:")
     print(compact(memory.summary, 420))
+
+
+def print_dev_summary(result: RunResult) -> None:
+    section("DEV MODE: DEBUG EVENTS")
+    for event in result.events[-30:]:
+        prefix = f"[{event.phase}]"
+        details = []
+        if event.generation is not None:
+            details.append(f"generation={event.generation}")
+        if event.model:
+            details.append(f"model={event.model}")
+        if event.idea_id:
+            details.append(f"idea={event.idea_id}")
+        detail_text = f" ({', '.join(details)})" if details else ""
+        print(f"{prefix}{detail_text} {compact(event.message, 180)}")
+
+    section("DEV MODE: MODEL NOTES")
+    notes_printed = 0
+    for snapshot in result.generations[-2:]:
+        for critique in snapshot.critiques[:4]:
+            print(
+                f"Critique {critique.idea_id} by {critique.critic_model}: "
+                f"{compact(critique.suggested_improvement, 180)}"
+            )
+            notes_printed += 1
+        for comparison in snapshot.comparisons[:4]:
+            print(
+                f"Judge {comparison.judge_model}: {comparison.winner_id} over "
+                f"{comparison.loser_id} because {compact(comparison.reason, 180)}"
+            )
+            notes_printed += 1
+
+    if notes_printed == 0:
+        print("No model notes were recorded.")

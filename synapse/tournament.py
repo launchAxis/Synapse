@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import Dict, Iterable, List
+from typing import Callable, Dict, Iterable, List
 
 from synapse.ideas import Comparison, Idea
 from synapse.models import ModelManager
@@ -15,6 +15,8 @@ def run_pairwise_tournament(
     ideas: List[Idea],
     judge_models: Dict[str, str],
     manager: ModelManager,
+    warning_handler: Callable[[str, str, str, str], None] | None = None,
+    print_warnings: bool = True,
 ) -> tuple[List[Idea], List[Comparison]]:
     for idea in ideas:
         idea.reset_record()
@@ -38,10 +40,14 @@ def run_pairwise_tournament(
                     winner_side, reason = parse_judgment(retry.text)
 
             if winner_side is None:
-                print(
-                    f"Warning: invalid tournament judgment from {model} for "
+                message = (
+                    f"invalid tournament judgment from {model} for "
                     f"{idea_a.id} vs {idea_b.id}. Comparison skipped."
                 )
+                if warning_handler:
+                    warning_handler(message, model, idea_a.id, idea_b.id)
+                if print_warnings:
+                    print(f"Warning: {message}")
                 continue
 
             if winner_side == "B":
@@ -65,17 +71,20 @@ def run_pairwise_tournament(
                 )
             )
 
-    ranked = sorted(
-        idea_by_id.values(),
-        key=lambda item: (item.wins, -item.losses, item.id),
-        reverse=True,
-    )
+    ranked = rank_ideas(idea_by_id.values())
     return ranked, comparisons
 
 
 def parse_judgment(text: str) -> tuple[str | None, str]:
-    winner_match = re.search(r"^\s*WINNER\s*:\s*([AB])\s*$", text, flags=re.I | re.M)
-    reason_match = re.search(r"reason\s*:\s*(.*)", text, flags=re.I | re.DOTALL)
+    winner_match = None
+    for line in text.splitlines():
+        cleaned = line.replace("**", "").strip()
+        winner_match = re.fullmatch(r"WINNER\s*:\s*([AB])", cleaned, flags=re.I)
+        if winner_match:
+            break
+
+    reason_text = re.sub(r"\*\*", "", text)
+    reason_match = re.search(r"reason\s*:\s*(.*)", reason_text, flags=re.I | re.DOTALL)
 
     if not winner_match:
         return None, text.strip() or "No parseable reason provided."
@@ -83,6 +92,10 @@ def parse_judgment(text: str) -> tuple[str | None, str]:
     winner = winner_match.group(1).upper()
     reason = reason_match.group(1).strip() if reason_match else text.strip()
     return winner, reason or "No reason provided."
+
+
+def rank_ideas(ideas: Iterable[Idea]) -> List[Idea]:
+    return sorted(ideas, key=lambda item: (-item.wins, item.losses, item.id))
 
 
 def summarize_tournament_feedback(idea: Idea, comparisons: Iterable[Comparison]) -> str:

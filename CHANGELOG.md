@@ -5,6 +5,18 @@
 - Added simplified output mode for compact generation overviews.
 - Removed duplicate `main.py` entrypoint so `synapse.py` is the single launcher.
 
+## v0.2.2
+
+- Replaced the hardcoded education-focused final synthesis prompt with a topic-neutral prompt.
+- Added CLI flags for prompt, mode, generation count, survivor count, version, model listing, JSON output, and run saving.
+- Added quiet, JSON, and developer output modes.
+- Added structured debug events and model notes for inspectable runs.
+- Added JSON run export under `runs/` with `run.json`, `final_answer.md`, and `debug_log.txt`.
+- Added controlled fresh outsider ideas during evolution to reduce premature convergence.
+- Improved missing-model reporting by showing available models when possible.
+- Hardened tournament parsing to accept strict markdown-wrapped `WINNER:` lines while still rejecting vague judgments.
+- Added pytest-based development tests through `requirements-dev.txt`.
+
 ## v0.2.1
 
 - Fixed tournament winner parsing so unclear judgments are retried once and then skipped instead of guessed.

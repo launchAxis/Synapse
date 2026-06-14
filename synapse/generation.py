@@ -6,6 +6,7 @@ from typing import Dict, List
 from synapse.ideas import Idea
 from synapse.models import ModelManager
 from synapse.prompts import generation_prompt
+from synapse.utils import strip_response_label
 
 
 def generate_initial_ideas(topic: str, models: Dict[str, str], manager: ModelManager) -> List[Idea]:
@@ -19,9 +20,10 @@ def generate_initial_ideas(topic: str, models: Dict[str, str], manager: ModelMan
         ideas.append(
             Idea(
                 id=label,
-                text=response.text,
+                text=strip_response_label(response.text, ["Idea"]),
                 author_model=model,
                 generation=0,
+                origin="generated",
             )
         )
 

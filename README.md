@@ -1,26 +1,30 @@
-﻿![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![Ollama](https://img.shields.io/badge/LLM-Ollama-black)
 
 # Synapse
 
 Synapse is a local multi-agent AI system where several small Ollama models work together to improve ideas instead of relying on one single answer.
 
-You can think of it as an AI council. One group of local models generates ideas, critiques them, compares them in direct tournaments, evolves the strongest survivors, and repeats the process until Synapse produces a final answer.
+You can think of it as an AI council. Models generate ideas, critique them, compare them in direct tournaments, evolve the strongest survivors, and repeat the process until Synapse produces a final answer.
 
-This is just an experimental project and was created mostly with ChatGPT (I'm not advanced enough yet and just wanted to explore the idea) I hope you enjoy tinkering with it!
+Synapse is an experimental project developed with substantial help from ChatGPT and other AI coding tools. I built it as a hands-on way to explore local multi-agent AI systems and see what happens when small models generate, critique, compare, and evolve ideas. I hope you enjoy tinkering with it!
 
-## v0.2.1
 
-Synapse v0.2.1 is a bugfix and output-quality pass.
+## v0.2.2
 
-Fixes:
+Synapse v0.2.2 is a hybrid reliability and inspectability release.
 
-- tournament winners are parsed only from a strict `WINNER:` line
-- unclear tournament judgments are retried once, then skipped
-- critiques use strict uppercase labels for more reliable parsing
-- failed critique parsing preserves the raw critique instead of showing empty fields
-- final results use a complete proposal structure
-- evolution prompts ask survivors to preserve distinct approaches
+New in v0.2.2:
+
+* topic-neutral final synthesis, so unrelated prompts no longer get forced into education, offline, or teacher-related sections
+* CLI flags for scripted runs
+* quiet, JSON, and developer output modes
+* structured debug events
+* JSON run export under `runs/`
+* stronger model availability reporting
+* markdown-tolerant strict tournament parsing
+* controlled novelty injection during evolution
+* pytest-based tests in `requirements-dev.txt`
 
 ## How It Works
 
@@ -32,7 +36,7 @@ flowchart TD
     D[Pairwise Tournament]
     E[Rank Ideas]
     F[Generation Memory]
-    G[Evolve Survivors]
+    G[Evolve Survivors + Fresh Outsider]
     H[Final Result]
 
     A --> B
@@ -45,7 +49,7 @@ flowchart TD
     E --> H
 ```
 
-The v0.2.1 loop is:
+The loop is:
 
 1. Generate one idea per available model.
 2. Ask models for structured critiques.
@@ -53,27 +57,23 @@ The v0.2.1 loop is:
 4. Record wins, losses, judge model, and reason.
 5. Rank ideas by tournament performance.
 6. Summarize generation memory.
-7. Improve the strongest survivors.
+7. Improve survivors and add one fresh outsider idea.
 8. Repeat for multiple generations.
-9. Synthesize the final answer.
+9. Synthesize the final answer from the strongest evolved idea.
 
-## Models
+## Best Use Cases
 
-By default, Synapse uses:
+Synapse works best for open-ended prompts where multiple perspectives, critique, comparison, and refinement are useful, such as:
 
-- `qwen2.5:3b`
-- `gemma2:2b`
-- `llama3.2:3b`
+* startup ideas
+* game concepts
+* product concepts
+* design problems
+* research directions
+* software architecture ideas
+* self-improving AI system designs
 
-You can edit these in `synapse/config.py`.
-
-If a model is missing, Synapse prints a warning like:
-
-```text
-Warning: model llama3.2:3b is not installed. Run: ollama pull llama3.2:3b
-```
-
-Synapse will continue with the remaining installed models when possible.
+It is less useful for simple factual questions because its strength comes from structured disagreement, comparison, and evolution rather than quick retrieval.
 
 ## Requirements
 
@@ -81,10 +81,16 @@ Install Ollama:
 
 https://ollama.com
 
-Install Python dependencies:
+Install runtime dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Install test dependencies:
+
+```bash
+pip install -r requirements-dev.txt
 ```
 
 Pull the default models:
@@ -97,80 +103,167 @@ ollama pull llama3.2:3b
 
 ## Usage
 
-Run:
+Interactive mode:
 
 ```bash
 python synapse.py
 ```
 
-Then enter a prompt.
+Scripted mode:
 
-Example:
+```bash
+python synapse.py --prompt "Design a better note-taking app" --mode simplified
+```
+
+Useful flags:
+
+```bash
+python synapse.py --version
+python synapse.py --models
+python synapse.py --prompt "Design a better note-taking app" --mode quiet
+python synapse.py --prompt "Design a better note-taking app" --mode json
+python synapse.py --prompt "Design a better note-taking app" --mode dev --save-run
+python synapse.py --prompt "Design a better note-taking app" --generations 2 --survivors 2
+```
+
+Output modes:
+
+* `detailed`: full readable trace
+* `simplified`: compact generation summaries
+* `quiet`: prints only the final answer with minimal terminal output
+* `json`: prints only the full `RunResult` JSON
+* `dev`: simplified trace plus debug events and model notes
+
+Save a run:
+
+```bash
+python synapse.py --prompt "Design a better note-taking app" --save-run
+```
+
+Synapse writes:
 
 ```text
-Design an AI system that designs better AI systems through competition.
+runs/YYYY-MM-DD_HH-MM-SS_slug/
+  run.json
+  final_answer.md
+  debug_log.txt
 ```
 
+## Models
 
-## Output Modes
+By default, Synapse uses:
 
-Synapse can print either a detailed trace or a simplified trace.
+* `qwen2.5:3b`
+* `gemma2:2b`
+* `llama3.2:3b`
 
-When you run the app, choose:
+You can edit these in `synapse/config.py`. See `docs/CONFIG_GUIDE.md` for the main settings.
 
-- `d` for detailed output: prints generated ideas, structured critiques, tournament results, rankings, memory, and final result.
-- `s` for simplified output: prints a compact overview of each generation, including ideas, critique highlights, tournament count, winners, win/loss scores, survivors, memory, and final result.
-
-Code can also call:
-
-```python
-run_council(topic, simplified=True)
-```
+If a model is missing, Synapse reports the missing model, shows available models when Ollama provides them, and continues with remaining configured models when possible.
 
 ## Project Structure
 
 ```text
 Synapse/
-    synapse.py
-    requirements.txt
-    README.md
-    CHANGELOG.md
-    synapse/
-        __init__.py
-        config.py
-        core.py
-        models.py
-        generation.py
-        critique.py
-        tournament.py
-        evolution.py
-        memory.py
-        prompts.py
-        ideas.py
-        output.py
-        utils.py
-    docs/
-        SYNAPSE_BRAIN.md
-        PROJECT_HISTORY.md
-        ROADMAP.md
+  synapse.py
+  requirements.txt
+  requirements-dev.txt
+  README.md
+  CHANGELOG.md
+  LICENSE
+  synapse/
+    __init__.py
+    config.py
+    core.py
+    models.py
+    generation.py
+    critique.py
+    tournament.py
+    evolution.py
+    memory.py
+    prompts.py
+    ideas.py
+    output.py
+    export.py
+    utils.py
+  docs/
+    CONFIG_GUIDE.md
+    SYNAPSE_BRAIN.md
+    PROJECT_HISTORY.md
+    ROADMAP.md
+  tests/
 ```
 
-## Best Use Cases
+## Examples
 
-Synapse works best for open-ended prompts:
+### Basic idea-generation run
 
-- startup ideas
-- game concepts
-- product concepts
-- design problems
-- research directions
-- self-improving AI system designs
+```bash
+python synapse.py --prompt "Design an AI system that designs better AI systems through competition." --mode simplified
+```
 
-It is less useful for simple factual questions because its strength comes from critique, comparison, and evolution.
+This runs Synapse in a compact mode and prints generation summaries, critiques, tournament results, survivors, memory, and the final answer.
 
-## Notes
+### JSON output
 
-Synapse is experimental. Results depend heavily on your installed models, hardware, prompts, and generation settings. The point is to explore whether structured disagreement between local models can produce better answers than a single first response.
+```bash
+python synapse.py --prompt "Design a peaceful steampunk space strategy game inspired by Master of Orion, focused on exploration, diplomacy, ancient ruins, and non-lethal robot battles." --mode json
+```
+
+This prints the full structured `RunResult` as JSON, including generated ideas, critiques, comparisons, rankings, debug events, and the final answer.
+
+### Developer mode with saved run
+
+```bash
+python synapse.py --prompt "Design a better note-taking app for students and researchers." --mode dev --save-run
+```
+
+This prints a developer-friendly trace and saves the full run under `runs/`, including:
+
+```text
+run.json
+final_answer.md
+debug_log.txt
+```
+
+### Good prompts to try
+
+Synapse works best with open-ended prompts where different models can generate, critique, compare, and evolve ideas.
+
+Try prompts like:
+
+```text
+Design a self-improving AI system that learns from its own mistakes without retraining the underlying model.
+
+Create a startup idea for AI that solves a real daily problem, using current or near-future technology.
+
+Design a developer tool that sits inside a code editor and improves code quality in real time.
+
+Design a peaceful space strategy game focused on exploration, diplomacy, ancient ruins, and non-lethal conflict.
+
+Create a low-cost system to reduce food waste in school cafeterias without using artificial intelligence.
+```
+
+### Example output style
+
+Synapse outputs vary depending on the models, prompt, and settings. A typical run includes:
+
+```text
+Generation 0
+- Initial ideas from each available model
+- Structured critiques
+- Pairwise tournament comparisons
+- Ranked survivors
+
+Generation 1+
+- Improved survivor ideas
+- Fresh outsider idea
+- New critiques and comparisons
+- Updated generation memory
+
+Final Result
+- Synthesized answer based on the strongest evolved idea
+```
 
 ## Developer Checks
 
@@ -180,55 +273,45 @@ Run a syntax check:
 python -m compileall .
 ```
 
-The project intentionally does not require a test framework yet. Parser checks can be run with small direct Python assertions while the codebase is still compact.
+Run the test suite:
 
-## Examples
-
-**For a better comparison towards 0.1.0 we are using the same prompts as before.**
-
-Prompts:
-- Create a startup idea for AI that solves a real daily student problem. It must be realistic with current or near-future tech.
-- Design a system to reduce food waste in school cafeterias without using any artificial intelligence. It should be realistic, low-cost, and usable in real schools today.
-- Design a developer tool that sits inside a code editor and improves code quality in real time (linting, bug detection, refactoring suggestions). Describe its architecture, how it processes code, and what makes it different from existing tools.
-- Design a self-improving AI system that learns from its own mistakes when generating ideas, without retraining the underlying model. It should evolve its decision-making process over time using feedback loops.
-
-### Output 1
-
-#### Final System Name:
-**LearnWell**
-
-#### Core Concept:
-The LearnWell platform is designed as a comprehensive, AI-driven solution that addresses the multifaceted needs of students in real time while ensuring their well-being and productivity are not compromised. It integrates advanced learning analytics with robust human interaction to provide personalized support for academic challenges and mental health issues. The system aims to create a supportive ecosystem where students can thrive both academically and emotionally.
-
-### Output 2
-
-#### 1. Final System Name
-**School Eats Smart & Wasteless System**
-
-#### 2. Core Concept
-The **School Eats Smart & Wasteless System** is an innovative, realistic, and low-cost solution to reduce food waste in school cafeterias. It combines existing technology with user-friendly strategies to provide a comprehensive approach that can be easily implemented without significant upfront investments or complex infrastructure changes.
-
-### Output 3
-
-#### **1. Final System Name**
-NextGen Code Enforcer
-
-#### **2. Core Concept**
-NextGen Code Enforcer is a comprehensive developer tool designed to sit inside a code editor and offer real-time feedback on code quality, performance, and security in real time (linting, bug detection, refactoring suggestions). By leveraging advanced machine learning models fine-tuned with proprietary data and integrating seamlessly with Visual Studio Code (VSCode), this system aims to provide developers with faster and more accurate insights that significantly enhance productivity. The tool includes automated refactorings and supports a flexible feedback model for optimal user experience.
-
-### Full System Output Example
-
-<img width="1918" height="1095" alt="Full_System_Output_Example" src="https://github.com/user-attachments/assets/4d6c8fae-139e-47d5-8229-cca4aa809d47" />
-
-**NOTE**
-- The Outputs (except for the Full System Output Example) given are only the conclusion or overview paragraphs taken from the original output along with the title
-- All Outputs given (including the Full System Output Example) were generated using the simplified mode.
-- These prompts were given to, and outputs generated by, the following models:
+```bash
+python -m pytest
 ```
-- `qwen2.5:3b`
-- `gemma2:2b`
-- `llama3.2:3b`
-```
+
+## Current Scope
+
+Synapse v0.2.2 intentionally keeps the runtime lightweight and local-first.
+
+Included in this release:
+
+* local Ollama model orchestration
+* CLI usage
+* JSON output mode
+* JSON run export
+* debug/dev output mode
+* controlled novelty injection
+* stricter parser behavior
+* pytest-based development checks
+
+Intentionally postponed:
+
+* full Rich split-screen UI
+* persistent cross-run memory
+* real model-to-model dialogue
+* concurrency
+* Pydantic structured outputs
+* cloud APIs
+* agentic terminal app / coding-assistant style interface
+* LoRA or model-weight training
+
+## Notes
+
+Synapse is experimental. Results depend heavily on installed models, hardware, prompts, and generation settings.
+
+Developer mode shows visible model outputs, model notes, debug events, and system decisions. It does not show hidden private model reasoning.
+
+Actual examples are included in text at docs/examples_FULL.txt
 
 ## License
 
@@ -247,4 +330,3 @@ Applications using Synapse are also encouraged, but not required, to include a m
 > Powered by Synapse by launchAxis
 
 On the Change Date, Synapse will become available under the Apache License 2.0.
-

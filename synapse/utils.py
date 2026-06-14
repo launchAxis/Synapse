@@ -61,3 +61,11 @@ def first_nonempty(*values: str, fallback: str = "Not provided.") -> str:
         if value and value.strip():
             return value.strip()
     return fallback
+
+
+def strip_response_label(text: str, labels: list[str]) -> str:
+    cleaned = text.strip()
+    for label in labels:
+        pattern = rf"^\s*(?:\*\*)?{re.escape(label)}(?:\*\*)?\s*:\s*"
+        cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
+    return cleaned.strip()

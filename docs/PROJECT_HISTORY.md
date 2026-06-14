@@ -35,3 +35,9 @@ The main v0.2.0 shift is from score-first evaluation to direct comparison betwee
 Bugfix and output-quality release.
 
 Fixed tournament winner parsing so Synapse no longer guesses when a judge response is unclear. Added a retry for invalid judgments, stricter critique labels, better critique fallback behavior, a stronger final proposal prompt, and light diversity guidance during evolution.
+
+## v0.2.2
+
+Hybrid reliability and inspectability release.
+
+Added a topic-neutral final synthesis prompt, CLI flags, quiet/JSON/dev modes, structured debug events, JSON run export, stronger missing-model diagnostics, markdown-tolerant strict tournament parsing, and controlled fresh outsider ideas during evolution. This release keeps Synapse local and beginner-readable while making each run easier to inspect and test.

@@ -55,9 +55,25 @@ The implementation is split into small modules:
 - `synapse/prompts.py`: prompt templates
 - `synapse/core.py`: the main pipeline
 
+## v0.2.2 Architecture Update
+
+Synapse v0.2.2 keeps the v0.2 council loop, but each run now produces a structured `RunResult`.
+
+That run result contains:
+
+- topic and config snapshot
+- usable and missing models
+- generation snapshots
+- idea lineage and mutation origin
+- critiques and tournament comparisons
+- debug events
+- final answer
+
+This makes Synapse easier to inspect without adding a heavy UI. Developer mode shows debug events and model notes in the terminal, and JSON export can save the full run under `runs/`.
+
 ## Current Limits
 
-v0.2.0 intentionally stays simple.
+v0.2.2 intentionally stays simple.
 
 It does not yet include:
 
@@ -67,4 +83,20 @@ It does not yet include:
 - full debate between agents
 - benchmark scoring
 - cloud model providers
-- persistent JSON run history
+- persistent memory across runs
+- Rich split-screen UI
+- concurrency
+- Pydantic structured outputs
+
+## Future Roadmap
+
+Possible future versions:
+
+- v0.3.0: optional persistent memory across runs
+- v0.3.0: stronger final synthesis from multiple top ideas
+- v0.4.0: specialized agent roles such as Skeptic, Engineer, Researcher, and Synthesizer
+- v0.4.0: richer debate where models respond directly to each other
+- v0.5.0: configurable model profiles and prompt presets
+- later: simple local UI for inspecting idea lineage and tournament results
+
+The long-term dream is an idea evolution engine where local models can argue, critique, improve, remember, and converge.

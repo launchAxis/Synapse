@@ -37,5 +37,9 @@ def test_parse_tournament_judgment():
     assert parse_judgment("WINNER: B\nREASON: clearer plan") == ("B", "clearer plan")
 
 
+def test_parse_markdown_wrapped_tournament_judgment():
+    assert parse_judgment("**WINNER:** **A**\n**REASON:** clearer plan")[0] == "A"
+
+
 def test_unclear_tournament_judgment_is_invalid():
     assert parse_judgment("Idea B seems stronger because it is clearer.")[0] is None
