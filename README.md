@@ -311,7 +311,7 @@ Synapse is experimental. Results depend heavily on installed models, hardware, p
 
 Developer mode shows visible model outputs, model notes, debug events, and system decisions. It does not show hidden private model reasoning.
 
-Actual examples are included in text at docs/examples_FULL.txt
+Actual examples are included in text at docs/examples_FULL.md
 
 ## License
 
