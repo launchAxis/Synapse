@@ -13,10 +13,19 @@ You can think of it as a local AI council: models propose ideas, steelman them, 
 
 Synapse runs a structured idea-evolution process:
 
-```text
-TASK -> GENERATE -> STEELMAN -> CRITIQUE -> TOURNAMENT -> EVOLVE -> CHALLENGE -> VERIFY -> SYNTHESIZE -> LOG
+```mermaid
+flowchart TD
+    A[Task] --> B[Generate]
+    B --> C[Steelman]
+    C --> D[Critique]
+    D --> E[Tournament]
+    E --> F[Evolve]
+    F --> C
+    E --> G[Challenge]
+    G --> H[Verify]
+    H --> I[Synthesize]
+    I --> J[Log]
 ```
-
 Core ideas:
 
 - local-first by default with Ollama
