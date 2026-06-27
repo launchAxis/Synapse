@@ -1,0 +1,2 @@
+"""Benchmark harness for Synapse."""
+

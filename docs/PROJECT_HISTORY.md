@@ -41,3 +41,11 @@ Fixed tournament winner parsing so Synapse no longer guesses when a judge respon
 Hybrid reliability and inspectability release.
 
 Added a topic-neutral final synthesis prompt, CLI flags, quiet/JSON/dev modes, structured debug events, JSON run export, stronger missing-model diagnostics, markdown-tolerant strict tournament parsing, and controlled fresh outsider ideas during evolution. This release keeps Synapse local and beginner-readable while making each run easier to inspect and test.
+
+## v0.2.3
+
+Process Core release.
+
+Refactored Synapse into a general-purpose structured process: task routing, role-based independent generation, steelman, structured critique, pairwise tournament, evolution with borrowed strengths, outsider injection, challenge, verification, synthesis, and structured logging.
+
+This release adds `quick`, `balanced`, `deep`, and `dev` process modes and saves every run under `logs/run_.../` with stage-specific JSON files plus conversation-shaped JSONL events for future visualization.

@@ -1,8 +1,8 @@
-# Contributing to Synapse
+﻿# Contributing to Synapse
 
 Thank you for your interest in contributing to Synapse.
 
-Synapse is an experimental multi-agent AI framework focused on idea generation, critique, tournament selection, and evolutionary improvement using local language models.
+Synapse is an experimental local-first idea evolution engine focused on idea generation, critique, tournament selection, and evolutionary improvement using local language models.
 
 ## Ways to Contribute
 
@@ -38,6 +38,6 @@ Please:
 
 ## Project Goals
 
-Synapse explores whether structured disagreement and evolutionary selection between multiple local AI models can produce stronger outputs than a single model response.
+Synapse explores whether structured disagreement and evolutionary selection between multiple local models can produce stronger outputs than a single model response.
 
 Contributions that improve reliability, diversity of ideas, evaluation quality, and evolutionary behavior are especially welcome.

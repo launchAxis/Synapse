@@ -1,0 +1,26 @@
+{
+  "name": "synapse-terminal-ui",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Ink-based terminal frontend for the local Synapse API.",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "synapse": "./source/cli.js",
+    "synapse-tui": "./source/cli.js"
+  },
+  "scripts": {
+    "start": "node source/cli.js",
+    "link-command": "npm link",
+    "check": "node --check source/cli.js && node --check source/app.js && node --check source/api.js && node --check source/format.js && node --check source/signal-ring.js && node --check source/signal-ring.test.js && node --check source/format.test.js && node --check source/api.test.js",
+    "test": "node source/signal-ring.test.js && node source/format.test.js && node source/api.test.js"
+  },
+  "dependencies": {
+    "ink": "^5.0.1",
+    "ink-select-input": "^6.2.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^18.2.0"
+  }
+}

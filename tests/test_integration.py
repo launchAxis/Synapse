@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 
 from synapse.core import run_council_result
@@ -46,13 +45,6 @@ class FakeManager:
         return FakeResponse(True, "Fallback response.")
 
 
-class InvalidJudgmentManager(FakeManager):
-    def ask(self, model, prompt):
-        if "Choose which idea is stronger" in prompt or "previous judgment" in prompt:
-            return FakeResponse(True, "Idea B seems stronger but I will not use the required label.")
-        return super().ask(model, prompt)
-
-
 def test_run_council_result_with_mocked_manager_collects_run_data():
     result = run_council_result(
         "Design a better note-taking app",
@@ -66,36 +58,3 @@ def test_run_council_result_with_mocked_manager_collects_run_data():
     assert len(result.generations) == 2
     assert any(event.phase == "TOURNAMENT" for event in result.events)
     assert any(idea.origin == "fresh" for idea in result.generations[1].ideas)
-
-
-def test_quiet_mode_suppresses_invalid_tournament_warning_output(capsys):
-    result = run_council_result(
-        "Design a better note-taking app",
-        mode="quiet",
-        generations=1,
-        survivors=1,
-        manager=InvalidJudgmentManager(),
-    )
-
-    output = capsys.readouterr().out
-
-    assert output == "Final answer from fake model.\n"
-    assert "Warning: invalid tournament judgment" not in output
-    assert any("warning: invalid tournament judgment" in event.message for event in result.events)
-
-
-def test_json_mode_suppresses_warnings_and_prints_parseable_json(capsys):
-    result = run_council_result(
-        "Design a better note-taking app",
-        mode="json",
-        generations=1,
-        survivors=1,
-        manager=InvalidJudgmentManager(),
-    )
-
-    output = capsys.readouterr().out
-    data = json.loads(output)
-
-    assert data["final_answer"] == result.final_answer
-    assert "Warning: invalid tournament judgment" not in output
-    assert any("warning: invalid tournament judgment" in event["message"] for event in data["events"])

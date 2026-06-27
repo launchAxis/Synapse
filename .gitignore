@@ -10,3 +10,9 @@ env/
 ai_council_memory.json
 idea_evolution.mmd
 runs/
+logs/
+bench_runs/
+.bench_cache/
+dist/
+node_modules/
+terminal-ui/node_modules/

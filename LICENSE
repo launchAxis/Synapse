@@ -1,6 +1,6 @@
-Business Source License 1.1
+﻿Business Source License 1.1
 
-License text copyright © 2024 MariaDB plc, All Rights Reserved.
+License text copyright (c) 2024 MariaDB plc, All Rights Reserved.
 "Business Source License" is a trademark of MariaDB plc.
 
 Parameters
@@ -28,9 +28,9 @@ Additional Use Grant:   You may make production use of the Licensed Work
 
                     If the Licensed Work is used to power a user-facing
                     application, product, website, interface, or system
-                    under this Additional Use Grant, that application is 
-                    encouraged to include the following attribution in its 
-                    main user interface, about page, credits page, 
+                    under this Additional Use Grant, that application is
+                    encouraged to include the following attribution in its
+                    main user interface, about page, credits page,
                     documentation, legal notices, or system output:
 
                     "Powered by Synapse (launchAxis)"

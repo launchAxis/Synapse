@@ -1,0 +1,14 @@
+{
+  "name": "synapse_tiny",
+  "prompts": [
+    {
+      "id": "T01",
+      "title": "Tiny judge plumbing check",
+      "category": "planning",
+      "difficulty": "medium",
+      "expected_traits": ["specific", "risk-aware", "actionable"],
+      "max_output_tokens": 700,
+      "prompt": "Create a concise release checklist for a local-first developer tool. Include risks, tests, documentation, and what should stay out of scope."
+    }
+  ]
+}

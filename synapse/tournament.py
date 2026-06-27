@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import Callable, Dict, Iterable, List
+from typing import Dict, Iterable, List
 
 from synapse.ideas import Comparison, Idea
 from synapse.models import ModelManager
@@ -15,8 +15,8 @@ def run_pairwise_tournament(
     ideas: List[Idea],
     judge_models: Dict[str, str],
     manager: ModelManager,
-    warning_handler: Callable[[str, str, str, str], None] | None = None,
-    print_warnings: bool = True,
+    rubric: Iterable[str] = (),
+    verbose: bool = True,
 ) -> tuple[List[Idea], List[Comparison]]:
     for idea in ideas:
         idea.reset_record()
@@ -24,50 +24,86 @@ def run_pairwise_tournament(
     comparisons: List[Comparison] = []
     idea_by_id = {idea.id: idea for idea in ideas}
 
-    for idea_a, idea_b in itertools.combinations(ideas, 2):
-        for label, model in judge_models.items():
-            response = manager.ask(model, comparison_prompt(topic, idea_a, idea_b, label))
-            if not response.ok:
+    comparison_number = 0
+    for left, right in itertools.combinations(ideas, 2):
+        judge_items = eligible_judges(left, right, judge_models)
+        for label, model in judge_items:
+            comparison_number += 1
+            comparison_id = f"C{comparison_number:04d}"
+            first = judge_once(topic, left, right, label, model, manager, rubric, swapped=False)
+            second = judge_once(topic, right, left, label, model, manager, rubric, swapped=True)
+
+            if not first["valid"] or not second["valid"]:
+                reason = first["reason"] if not first["valid"] else second["reason"]
+                if verbose:
+                    print(
+                        f"Warning: invalid tournament judgment from {model} for "
+                        f"{left.id} vs {right.id}. Comparison marked invalid."
+                    )
+                comparisons.append(
+                    Comparison(
+                        comparison_id=comparison_id,
+                        idea_a_id=left.id,
+                        idea_b_id=right.id,
+                        winner_id="",
+                        loser_id="",
+                        judge_model=model,
+                        judge_role="Judge",
+                        reason=reason,
+                        valid=False,
+                        stable=False,
+                        first_winner_id=str(first["winner_id"]),
+                        second_winner_id=str(second["winner_id"]),
+                        second_reason=str(second["reason"]),
+                    )
+                )
                 continue
 
-            winner_side, reason = parse_judgment(response.text)
-            if winner_side is None:
-                retry = manager.ask(
-                    model,
-                    strict_comparison_retry_prompt(topic, idea_a, idea_b, label, response.text),
-                )
-                if retry.ok:
-                    winner_side, reason = parse_judgment(retry.text)
+            first_winner = str(first["winner_id"])
+            second_winner = str(second["winner_id"])
+            stable = bool(first_winner and first_winner == second_winner)
 
-            if winner_side is None:
-                message = (
-                    f"invalid tournament judgment from {model} for "
-                    f"{idea_a.id} vs {idea_b.id}. Comparison skipped."
+            if not stable:
+                comparisons.append(
+                    Comparison(
+                        comparison_id=comparison_id,
+                        idea_a_id=left.id,
+                        idea_b_id=right.id,
+                        winner_id="",
+                        loser_id="",
+                        judge_model=model,
+                        judge_role="Judge",
+                        reason=str(first["reason"]),
+                        valid=True,
+                        stable=False,
+                        first_winner_id=first_winner,
+                        second_winner_id=second_winner,
+                        second_reason=str(second["reason"]),
+                    )
                 )
-                if warning_handler:
-                    warning_handler(message, model, idea_a.id, idea_b.id)
-                if print_warnings:
-                    print(f"Warning: {message}")
                 continue
 
-            if winner_side == "B":
-                winner = idea_b
-                loser = idea_a
-            else:
-                winner = idea_a
-                loser = idea_b
+            winner = idea_by_id[first_winner]
+            loser = right if winner.id == left.id else left
 
             winner.wins += 1
             loser.losses += 1
 
             comparisons.append(
                 Comparison(
-                    idea_a_id=idea_a.id,
-                    idea_b_id=idea_b.id,
+                    comparison_id=comparison_id,
+                    idea_a_id=left.id,
+                    idea_b_id=right.id,
                     winner_id=winner.id,
                     loser_id=loser.id,
                     judge_model=model,
-                    reason=reason,
+                    judge_role="Judge",
+                    reason=str(first["reason"]),
+                    valid=True,
+                    stable=True,
+                    first_winner_id=first_winner,
+                    second_winner_id=second_winner,
+                    second_reason=str(second["reason"]),
                 )
             )
 
@@ -75,11 +111,41 @@ def run_pairwise_tournament(
     return ranked, comparisons
 
 
+def judge_once(
+    topic: str,
+    idea_a: Idea,
+    idea_b: Idea,
+    judge_label: str,
+    model: str,
+    manager: ModelManager,
+    rubric: Iterable[str],
+    swapped: bool,
+) -> dict[str, object]:
+    response = manager.ask(model, comparison_prompt(topic, idea_a, idea_b, judge_label, rubric, swapped=swapped))
+    if not response.ok:
+        return {"valid": False, "winner_id": "", "reason": response.error or "Judge call failed."}
+
+    winner_side, reason = parse_judgment(response.text)
+    if winner_side is None:
+        retry = manager.ask(
+            model,
+            strict_comparison_retry_prompt(topic, idea_a, idea_b, judge_label, response.text, rubric),
+        )
+        if retry.ok:
+            winner_side, reason = parse_judgment(retry.text)
+
+    if winner_side is None:
+        return {"valid": False, "winner_id": "", "reason": reason}
+
+    winner = idea_b if winner_side == "B" else idea_a
+    return {"valid": True, "winner_id": winner.id, "reason": reason}
+
+
 def parse_judgment(text: str) -> tuple[str | None, str]:
     winner_match = None
     for line in text.splitlines():
         cleaned = line.replace("**", "").strip()
-        winner_match = re.fullmatch(r"WINNER\s*:\s*([AB])", cleaned, flags=re.I)
+        winner_match = re.fullmatch(r"WINNER\s*:\s*(?:Idea\s*)?([AB])", cleaned, flags=re.I)
         if winner_match:
             break
 
@@ -94,6 +160,16 @@ def parse_judgment(text: str) -> tuple[str | None, str]:
     return winner, reason or "No reason provided."
 
 
+def eligible_judges(idea_a: Idea, idea_b: Idea, judge_models: Dict[str, str]) -> list[tuple[str, str]]:
+    all_judges = list(judge_models.items())
+    alternatives = [
+        (label, model)
+        for label, model in all_judges
+        if model not in {idea_a.author_model, idea_b.author_model}
+    ]
+    return alternatives or all_judges
+
+
 def rank_ideas(ideas: Iterable[Idea]) -> List[Idea]:
     return sorted(ideas, key=lambda item: (-item.wins, item.losses, item.id))
 
@@ -101,7 +177,7 @@ def rank_ideas(ideas: Iterable[Idea]) -> List[Idea]:
 def summarize_tournament_feedback(idea: Idea, comparisons: Iterable[Comparison]) -> str:
     related = [
         item for item in comparisons
-        if item.winner_id == idea.id or item.loser_id == idea.id
+        if item.valid and item.stable and (item.winner_id == idea.id or item.loser_id == idea.id)
     ]
     if not related:
         return "No tournament feedback was recorded."

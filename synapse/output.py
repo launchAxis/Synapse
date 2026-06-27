@@ -32,6 +32,17 @@ def print_tournament(comparisons: Iterable[Comparison]) -> None:
     section("Tournament Results")
     any_results = False
     for item in comparisons:
+        if not item.valid:
+            print(f"Invalid comparison {item.idea_a_id} vs {item.idea_b_id} ({item.judge_model})")
+            print(f"Reason: {compact(item.reason, 240)}")
+            continue
+        if not item.stable:
+            any_results = True
+            print(f"Unstable comparison {item.idea_a_id} vs {item.idea_b_id} ({item.judge_model})")
+            print(f"First pass winner: {item.first_winner_id or 'none'}")
+            print(f"Second pass winner: {item.second_winner_id or 'none'}")
+            print("No win awarded.")
+            continue
         any_results = True
         print(f"{item.winner_id} beat {item.loser_id} ({item.judge_model})")
         print(f"Reason: {compact(item.reason, 240)}")
@@ -83,9 +94,17 @@ def print_generation_summary(
 
     print("\nTournament:")
     if comparisons:
-        print(f"- {len(comparisons)} valid comparisons recorded")
+        stable_count = sum(1 for item in comparisons if item.valid and item.stable)
+        unstable_count = sum(1 for item in comparisons if item.valid and not item.stable)
+        invalid_count = sum(1 for item in comparisons if not item.valid)
+        print(f"- {stable_count} stable, {unstable_count} unstable, {invalid_count} invalid comparisons recorded")
         for item in comparisons[:5]:
-            print(f"- {item.winner_id} beat {item.loser_id}: {compact(item.reason, 120)}")
+            if not item.valid:
+                print(f"- invalid {item.idea_a_id} vs {item.idea_b_id}: {compact(item.reason, 120)}")
+            elif not item.stable:
+                print(f"- unstable {item.idea_a_id} vs {item.idea_b_id}: no win awarded")
+            else:
+                print(f"- {item.winner_id} beat {item.loser_id}: {compact(item.reason, 120)}")
         if len(comparisons) > 5:
             print(f"- ...and {len(comparisons) - 5} more comparisons")
     else:
@@ -128,10 +147,18 @@ def print_dev_summary(result: RunResult) -> None:
             )
             notes_printed += 1
         for comparison in snapshot.comparisons[:4]:
-            print(
-                f"Judge {comparison.judge_model}: {comparison.winner_id} over "
-                f"{comparison.loser_id} because {compact(comparison.reason, 180)}"
-            )
+            if not comparison.valid:
+                print(f"Judge {comparison.judge_model}: invalid comparison because {compact(comparison.reason, 180)}")
+            elif not comparison.stable:
+                print(
+                    f"Judge {comparison.judge_model}: unstable {comparison.idea_a_id} vs "
+                    f"{comparison.idea_b_id}; no win awarded"
+                )
+            else:
+                print(
+                    f"Judge {comparison.judge_model}: {comparison.winner_id} over "
+                    f"{comparison.loser_id} because {compact(comparison.reason, 180)}"
+                )
             notes_printed += 1
 
     if notes_printed == 0:

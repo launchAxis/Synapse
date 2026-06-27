@@ -14,13 +14,23 @@ MODELS = {
 }
 ```
 
-The keys are short council labels used in output. The values are Ollama model names.
+The keys are short council labels used in output. Bare values are Ollama model names. Explicit provider refs such as `ollama:qwen2.5:3b`, `openai:gpt-...`, or `anthropic:claude-...` are also supported when the provider is configured through environment variables.
 
 Check availability:
 
 ```bash
 python synapse.py --models
 ```
+
+Model presets can be selected per run:
+
+```bash
+python synapse.py --prompt "Design a better notes app" --model-preset local
+python synapse.py --prompt "Design a better notes app" --model-preset hybrid
+python synapse.py --prompt "Design a better notes app" --model-preset strong
+```
+
+`local` is the default. `hybrid` and `strong` only use provider models when optional refs such as `SYNAPSE_HYBRID_JUDGE_MODEL`, `SYNAPSE_HYBRID_SYNTHESIS_MODEL`, or `SYNAPSE_STRONG_MODEL` are set and available.
 
 ## Generations
 
@@ -82,4 +92,4 @@ Saved runs include:
 
 ## Postponed
 
-v0.2.2 intentionally does not add YAML config, Rich UI, concurrency, Pydantic structured outputs, cloud APIs, web UI, or persistent cross-run memory.
+This staging release intentionally does not add YAML config, fine-tuning/model training, Pydantic structured outputs, web UI, or persistent cross-run memory.

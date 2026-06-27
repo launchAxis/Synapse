@@ -46,7 +46,8 @@ Synapse v0.2.0 uses this loop:
 
 The implementation is split into small modules:
 
-- `synapse/models.py`: Ollama calls and missing-model handling
+- `synapse/models.py`: configured model status and provider-routed model calls
+- `synapse/providers.py`: local Ollama and optional API provider adapters
 - `synapse/generation.py`: initial idea generation
 - `synapse/critique.py`: structured critiques
 - `synapse/tournament.py`: pairwise tournament voting
@@ -55,34 +56,47 @@ The implementation is split into small modules:
 - `synapse/prompts.py`: prompt templates
 - `synapse/core.py`: the main pipeline
 
-## v0.2.2 Architecture Update
+## v0.2.3 Architecture Update
 
-Synapse v0.2.2 keeps the v0.2 council loop, but each run now produces a structured `RunResult`.
+Synapse v0.2.3 turns the council loop into an explicit process core:
+
+```text
+TASK -> GENERATE -> STEELMAN -> CRITIQUE -> TOURNAMENT -> EVOLVE -> CHALLENGE -> VERIFY -> SYNTHESIZE -> LOG
+```
+
+Each run starts with heuristic task routing and a simple rubric. Ideas are generated independently by role prompts, then steelmanned before they are critiqued. Tournaments still use strict pairwise judging, but comparisons now use the selected rubric and swap A/B positions to reduce bias.
+
+Evolution preserves steelmanned strengths, fixes weaknesses, borrows one concrete element from a defeated idea, and injects a fresh outsider. Before synthesis, the strongest candidates are challenged and verified against the original prompt, rubric, and consistency checks.
+
+Every run produces a structured `RunResult`.
 
 That run result contains:
 
 - topic and config snapshot
+- task type and rubric
 - usable and missing models
 - generation snapshots
+- steelman notes
 - idea lineage and mutation origin
 - critiques and tournament comparisons
+- challenge and verification results
+- conversation-shaped events
 - debug events
 - final answer
 
-This makes Synapse easier to inspect without adding a heavy UI. Developer mode shows debug events and model notes in the terminal, and JSON export can save the full run under `runs/`.
+This makes Synapse easier to inspect without adding a heavy UI. Developer mode shows debug events and model notes in the terminal, and every run saves stage logs under `logs/run_.../`.
 
 ## Current Limits
 
-v0.2.2 intentionally stays simple.
+v0.2.3 intentionally stays focused on process quality.
 
 It does not yet include:
 
 - web UI
 - database memory
-- advanced agent personalities
 - full debate between agents
 - benchmark scoring
-- cloud model providers
+- training or fine-tuning Synapse-specific models
 - persistent memory across runs
 - Rich split-screen UI
 - concurrency

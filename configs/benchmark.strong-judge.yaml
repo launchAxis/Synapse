@@ -1,0 +1,66 @@
+{
+    "run_name":  "synapse-core-strong-judge",
+    "output_dir":  "bench_runs",
+    "cache_dir":  ".bench_cache",
+    "seeds":  [
+                  1
+              ],
+    "baseline_system":  "single_best_local",
+    "pairwise_baselines_only":  true,
+    "comparison_pairs":  [
+                             [
+                                 "synapse_full",
+                                 "single_best_local"
+                             ],
+                             [
+                                 "synapse_full",
+                                 "naive_ensemble"
+                             ]
+                         ],
+    "rubric_grading":  true,
+    "rubric_fallback":  true,
+    "judge_min_stability":  0.70,
+    "concurrency":  1,
+    "judge":  {
+                  "kind":  "ollama_pairwise",
+                  "model":  "groq:llama-3.3-70b-versatile",
+                  "models":  [
+                                 "groq:llama-3.3-70b-versatile"
+                             ],
+                  "temperature":  0.0,
+                  "timeout_s":  180,
+                  "retry_attempts":  4,
+                  "retry_backoff_s":  2,
+                  "retry_max_sleep_s":  30,
+                  "min_request_interval_s":  3
+              },
+    "systems":  [
+                    {
+                        "id":  "synapse_full",
+                        "kind":  "synapse_python",
+                        "label":  "Synapse v0.3.0 full process",
+                        "profile":  "quick",
+                        "timeout_s":  600
+                    },
+                    {
+                        "id":  "single_best_local",
+                        "kind":  "ollama_single",
+                        "label":  "Best configured local single model",
+                        "model":  "qwen2.5:3b",
+                        "system_prompt":  "Answer the user\u0027s request directly and clearly.",
+                        "temperature":  0.2,
+                        "max_output_tokens":  900,
+                        "timeout_s":  300
+                    },
+                    {
+                        "id":  "naive_ensemble",
+                        "kind":  "naive_ensemble",
+                        "label":  "Naive three-draft ensemble",
+                        "model":  "qwen2.5:3b",
+                        "system_prompt":  "Answer the user\u0027s request directly and clearly.",
+                        "temperature":  0.4,
+                        "max_output_tokens":  900,
+                        "timeout_s":  450
+                    }
+                ]
+}

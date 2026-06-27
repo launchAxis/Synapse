@@ -20,19 +20,24 @@ def section(title: str) -> None:
     print(f"\n--- {title} ---")
 
 
-def parse_labeled_field(text: str, label: str) -> str:
-    labels = [
-        "Main weakness",
-        "MAIN_WEAKNESS",
-        "Risk",
-        "RISK",
-        "Missing element",
-        "MISSING_ELEMENT",
-        "Unclear assumption",
-        "UNCLEAR_ASSUMPTION",
-        "Suggested improvement",
-        "SUGGESTED_IMPROVEMENT",
-    ]
+DEFAULT_LABELS = [
+    "Main weakness",
+    "MAIN_WEAKNESS",
+    "Risk",
+    "RISK",
+    "Missing element",
+    "MISSING_ELEMENT",
+    "Unclear assumption",
+    "UNCLEAR_ASSUMPTION",
+    "Suggested improvement",
+    "SUGGESTED_IMPROVEMENT",
+]
+
+
+def parse_labeled_field(text: str, label: str, stop_labels: list[str] | None = None) -> str:
+    labels = stop_labels or DEFAULT_LABELS
+    if label not in labels:
+        labels = [label, *labels]
     label_pattern = "|".join(re.escape(item) for item in labels)
     pattern = (
         rf"(?:^|\n)\s*(?:#+\s*)?(?:[-*]\s*)?"
@@ -43,6 +48,10 @@ def parse_labeled_field(text: str, label: str) -> str:
     if not match:
         return ""
     return clean_markdown_label(match.group(1))
+
+
+def parse_labeled_fields(text: str, labels: list[str]) -> dict[str, str]:
+    return {label: parse_labeled_field(text, label, labels) for label in labels}
 
 
 def raw_fallback_summary(text: str, limit: int = 260) -> str:

@@ -1,0 +1,275 @@
+{
+  "name": "synapse_default_30",
+  "prompts": [
+    {
+      "id": "I01",
+      "title": "Novel study assistant concept",
+      "category": "ideation",
+      "difficulty": "medium",
+      "expected_traits": ["specific", "useful", "non-obvious"],
+      "max_output_tokens": 900,
+      "prompt": "Design a local AI study assistant for high-school students that protects privacy, works with limited internet, and helps teachers rather than replacing them. Explain the core concept, workflow, risks, and first implementation steps."
+    },
+    {
+      "id": "I02",
+      "title": "New personal knowledge tool",
+      "category": "ideation",
+      "difficulty": "medium",
+      "expected_traits": ["original", "practical", "clear"],
+      "max_output_tokens": 900,
+      "prompt": "Invent a personal knowledge management tool for people who dislike complex note systems. It must be local-first, low-friction, and useful after only one week of use."
+    },
+    {
+      "id": "P01",
+      "title": "Release plan under constraints",
+      "category": "planning",
+      "difficulty": "medium",
+      "expected_traits": ["sequenced", "realistic", "risk-aware"],
+      "max_output_tokens": 900,
+      "prompt": "Create a six-week release plan for a small team shipping a local desktop AI tool. Include milestones, risks, rollback criteria, and what to defer."
+    },
+    {
+      "id": "P02",
+      "title": "Community pilot plan",
+      "category": "planning",
+      "difficulty": "medium",
+      "expected_traits": ["operational", "measurable", "careful"],
+      "max_output_tokens": 900,
+      "prompt": "Design a pilot program for a community center that wants to use local AI tools for job-search support. Include scope, training, safety boundaries, metrics, and feedback loops."
+    },
+    {
+      "id": "C01",
+      "title": "Audit flawed benchmark proposal",
+      "category": "critique_revision",
+      "difficulty": "hard",
+      "expected_traits": ["critical", "constructive", "methodological"],
+      "max_output_tokens": 1000,
+      "prompt": "Audit this benchmark proposal and rewrite it into something credible: We test 4 systems on 12 prompts selected from examples where our system looks smart. One LLM judge picks a winner. We do not randomize answer order. We report average wins and skip human review."
+    },
+    {
+      "id": "C02",
+      "title": "Improve vague product spec",
+      "category": "critique_revision",
+      "difficulty": "medium",
+      "expected_traits": ["gap finding", "structure", "implementation realism"],
+      "max_output_tokens": 950,
+      "prompt": "Improve this draft product spec: Benchmark mode should run prompts through Synapse and show if the answer is better. It should compare old and new versions and maybe models too. It should create a report with scores and charts. Identify missing requirements and rewrite it into a credible spec."
+    },
+    {
+      "id": "A01",
+      "title": "Architecture tradeoff decision",
+      "category": "analysis_tradeoffs",
+      "difficulty": "medium",
+      "expected_traits": ["tradeoffs", "recommendation", "assumptions"],
+      "max_output_tokens": 900,
+      "prompt": "Choose between a best-single-model design, a naive ensemble, and a structured multi-agent orchestration system for a local AI app. Users tolerate up to 45 seconds for deep mode. Provide a comparison matrix, recommendation, and strongest counterargument."
+    },
+    {
+      "id": "A02",
+      "title": "Ablation study plan",
+      "category": "analysis_tradeoffs",
+      "difficulty": "hard",
+      "expected_traits": ["experimental rigor", "prioritization", "interpretability"],
+      "max_output_tokens": 1000,
+      "prompt": "Design an ablation study for a multi-stage orchestration system with candidate generation, critique, tournament selection, evolution, and final synthesis. Define metrics, avoid confounding, and explain what result would justify deleting a stage."
+    },
+    {
+      "id": "D01",
+      "title": "Benchmark package refactor",
+      "category": "coding_architecture",
+      "difficulty": "medium",
+      "expected_traits": ["module boundaries", "migration plan", "tests"],
+      "max_output_tokens": 900,
+      "prompt": "A benchmark script is now a 900-line monolith mixing prompt loading, inference, judging, CSV writing, report generation, and CLI parsing. Propose a refactor plan with module boundaries, migration order, and first tests."
+    },
+    {
+      "id": "D02",
+      "title": "Trace schema design",
+      "category": "coding_architecture",
+      "difficulty": "hard",
+      "expected_traits": ["observability", "schema discipline", "useful metrics"],
+      "max_output_tokens": 1000,
+      "prompt": "Design a JSON trace schema for a multi-agent system benchmark. It must analyze generated branches, critiques, selection winners, evolution quality, model calls, and token usage. Explain each field and what not to include in v1."
+    },
+    {
+      "id": "R01",
+      "title": "Conflicting benchmark constraints",
+      "category": "robustness_ambiguity",
+      "difficulty": "hard",
+      "expected_traits": ["prioritization", "tradeoffs", "clear unresolved items"],
+      "max_output_tokens": 950,
+      "prompt": "Produce a benchmark recommendation memo under these constraints: reproducible, realistic, cheap enough for weekly runs, catches regressions early, does not depend too heavily on one judge model, and is understandable to non-research engineers."
+    },
+    {
+      "id": "R02",
+      "title": "Sensitive policy benchmark",
+      "category": "robustness_ambiguity",
+      "difficulty": "hard",
+      "expected_traits": ["risk awareness", "human review", "scope control"],
+      "max_output_tokens": 1000,
+      "prompt": "Design a benchmark for an AI system that drafts school policies. Outputs must be readable by non-lawyers, mistakes can be costly, and the system must not hallucinate legal requirements. Include evaluation criteria and where human review is mandatory."
+    },
+    {
+      "id": "I03",
+      "title": "Creative local writing tool",
+      "category": "ideation",
+      "difficulty": "medium",
+      "expected_traits": ["creative", "usable", "scoped"],
+      "max_output_tokens": 900,
+      "prompt": "Design a local AI writing tool for fiction writers who want help without losing their own voice. Include the core workflow, guardrails against generic prose, and first prototype."
+    },
+    {
+      "id": "I04",
+      "title": "Offline civic assistant",
+      "category": "ideation",
+      "difficulty": "hard",
+      "expected_traits": ["public value", "privacy", "feasibility"],
+      "max_output_tokens": 950,
+      "prompt": "Invent an offline-capable civic information assistant for small municipalities. It should help residents understand services without giving legal advice. Explain design, risks, and rollout."
+    },
+    {
+      "id": "I05",
+      "title": "Small business planning assistant",
+      "category": "ideation",
+      "difficulty": "medium",
+      "expected_traits": ["practical", "clear", "low-cost"],
+      "max_output_tokens": 900,
+      "prompt": "Design a low-cost local AI planning assistant for small businesses with no technical staff. It should help with weekly planning, not replace expert advice."
+    },
+    {
+      "id": "P03",
+      "title": "Release gating framework",
+      "category": "planning",
+      "difficulty": "hard",
+      "expected_traits": ["rigorous", "operational", "thresholds"],
+      "max_output_tokens": 1000,
+      "prompt": "Design a release gating framework for a multi-agent LLM orchestration system. Include daily checks, merge gates, release-candidate checks, rollback rules, and human review triggers."
+    },
+    {
+      "id": "P04",
+      "title": "Hardware constrained deployment",
+      "category": "planning",
+      "difficulty": "medium",
+      "expected_traits": ["constraints", "sequencing", "fallbacks"],
+      "max_output_tokens": 900,
+      "prompt": "Plan deployment of a local AI app to laptops with 8GB RAM and unreliable internet. Include model selection, fallback behavior, update strategy, and support plan."
+    },
+    {
+      "id": "P05",
+      "title": "Evaluation rollout plan",
+      "category": "planning",
+      "difficulty": "medium",
+      "expected_traits": ["measurement", "stages", "risk handling"],
+      "max_output_tokens": 900,
+      "prompt": "Create a rollout plan for introducing benchmark-driven development to a two-engineer AI project. Include what to automate first, what to review manually, and how to avoid slowing development."
+    },
+    {
+      "id": "C03",
+      "title": "Repair weak architecture answer",
+      "category": "critique_revision",
+      "difficulty": "medium",
+      "expected_traits": ["diagnosis", "rewrite", "specificity"],
+      "max_output_tokens": 950,
+      "prompt": "Critique and rewrite this weak answer: The best architecture is to use multiple AI agents because more agents are smarter. They should debate and then output the best answer. This will improve quality and users will like it."
+    },
+    {
+      "id": "C04",
+      "title": "Improve vague risk section",
+      "category": "critique_revision",
+      "difficulty": "medium",
+      "expected_traits": ["risk specificity", "repair", "prioritization"],
+      "max_output_tokens": 900,
+      "prompt": "A product spec says: Risks include hallucinations, bad UX, and slow speed. Improve this into a credible risk section with severity, mitigation, owner, and detection signals."
+    },
+    {
+      "id": "C05",
+      "title": "Review an evaluation rubric",
+      "category": "critique_revision",
+      "difficulty": "hard",
+      "expected_traits": ["rubric quality", "bias awareness", "actionable fixes"],
+      "max_output_tokens": 1000,
+      "prompt": "Review this rubric for judging open-ended AI answers: score clarity, creativity, and confidence from 1 to 10. Identify flaws and rewrite it into a stronger benchmark rubric."
+    },
+    {
+      "id": "A03",
+      "title": "Quality versus latency tradeoff",
+      "category": "analysis_tradeoffs",
+      "difficulty": "medium",
+      "expected_traits": ["frontier thinking", "recommendation", "cost awareness"],
+      "max_output_tokens": 900,
+      "prompt": "Analyze whether a local AI app should offer quick, balanced, and deep modes. Users value quality but abandon tasks over 60 seconds. Recommend defaults and explain tradeoffs."
+    },
+    {
+      "id": "A04",
+      "title": "Human review sampling strategy",
+      "category": "analysis_tradeoffs",
+      "difficulty": "hard",
+      "expected_traits": ["sampling", "risk", "statistical awareness"],
+      "max_output_tokens": 950,
+      "prompt": "Design a human review sampling strategy for LLM benchmark outputs. The team can review only 25% of cases. Decide which cases must be reviewed and how to use the results."
+    },
+    {
+      "id": "A05",
+      "title": "Judge model risk memo",
+      "category": "analysis_tradeoffs",
+      "difficulty": "medium",
+      "expected_traits": ["bias awareness", "mitigation", "clear recommendation"],
+      "max_output_tokens": 900,
+      "prompt": "Write a decision memo on whether a benchmark should rely on one local LLM judge. Include risks, mitigations, and a recommended minimum viable setup."
+    },
+    {
+      "id": "D03",
+      "title": "CLI contract for benchmark runner",
+      "category": "coding_architecture",
+      "difficulty": "medium",
+      "expected_traits": ["interface design", "reproducibility", "error handling"],
+      "max_output_tokens": 900,
+      "prompt": "Design a CLI contract for a benchmark runner that loads a config, loads a prompt suite, runs systems, judges outputs, and writes reports. Include flags, outputs, and error behavior."
+    },
+    {
+      "id": "D04",
+      "title": "Disk cache design",
+      "category": "coding_architecture",
+      "difficulty": "medium",
+      "expected_traits": ["cache keys", "invalidations", "simplicity"],
+      "max_output_tokens": 900,
+      "prompt": "Design a disk cache for benchmark completions and judge results. Include cache key fields, invalidation rules, file layout, and what not to cache."
+    },
+    {
+      "id": "D05",
+      "title": "Report artifact design",
+      "category": "coding_architecture",
+      "difficulty": "medium",
+      "expected_traits": ["artifact schema", "developer usability", "future-proofing"],
+      "max_output_tokens": 900,
+      "prompt": "Design the output artifacts for a local AI benchmark run. Include JSONL records, CSV summaries, Markdown report, and a human review sheet."
+    },
+    {
+      "id": "R03",
+      "title": "Ambiguous user request",
+      "category": "robustness_ambiguity",
+      "difficulty": "medium",
+      "expected_traits": ["assumptions", "clarifying structure", "useful answer"],
+      "max_output_tokens": 900,
+      "prompt": "A user asks: Make our AI system better. Produce a useful answer without asking follow-up questions. State assumptions, split possibilities, and recommend next steps."
+    },
+    {
+      "id": "R04",
+      "title": "Conflicting stakeholder constraints",
+      "category": "robustness_ambiguity",
+      "difficulty": "hard",
+      "expected_traits": ["conflict resolution", "prioritization", "transparency"],
+      "max_output_tokens": 950,
+      "prompt": "Recommend a benchmark plan when researchers want rigor, engineers want speed, leadership wants one simple number, and users care about practical quality. Resolve the conflict honestly."
+    },
+    {
+      "id": "R05",
+      "title": "Missing information handling",
+      "category": "robustness_ambiguity",
+      "difficulty": "medium",
+      "expected_traits": ["uncertainty", "practicality", "guardrails"],
+      "max_output_tokens": 900,
+      "prompt": "Create an implementation plan despite missing information about hardware, model availability, and user volume. Identify assumptions, decisions that can wait, and safe defaults."
+    }
+  ]
+}

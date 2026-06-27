@@ -1,0 +1,14 @@
+{
+  "name": "synapse-release",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Convenience npm scripts for the Synapse terminal UI release package.",
+  "scripts": {
+    "start": "npm --prefix terminal-ui start --",
+    "smoke": "npm --prefix terminal-ui start -- --smoke",
+    "install:tui": "npm --prefix terminal-ui install",
+    "link:tui": "npm --prefix terminal-ui link",
+    "check:tui": "npm --prefix terminal-ui run check",
+    "test:tui": "npm --prefix terminal-ui test"
+  }
+}
