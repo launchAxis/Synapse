@@ -204,6 +204,9 @@ benchmarks/
 bench/
 docs/
 scripts/
+packaging/
+  windows/
+  linux/
 tests/
 ```
 
